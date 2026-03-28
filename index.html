@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizSpace — Practice Tests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --howard-h: 220;
+            --myka-h: 330;
+        }
+        * { font-family: 'DM Sans', sans-serif; }
+        .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* ── Landing page bg ── */
+        #landingView {
+            background: #f8f7f4;
+            background-image: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(59,130,246,0.06) 0%, transparent 60%),
+                              radial-gradient(ellipse 60% 60% at 80% 80%, rgba(236,72,153,0.06) 0%, transparent 60%);
+        }
+        .dark #landingView {
+            background: #09090b;
+            background-image: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 60%),
+                              radial-gradient(ellipse 60% 60% at 80% 80%, rgba(236,72,153,0.08) 0%, transparent 60%);
+        }
+
+        /* ── User profile cards ── */
+        .user-card {
+            position: relative;
+            cursor: pointer;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
+        }
+        .user-card:hover { transform: translateY(-6px) scale(1.01); }
+        .user-card-howard {
+            background: linear-gradient(145deg, #1e3a5f 0%, #1e40af 60%, #2563eb 100%);
+            box-shadow: 0 8px 30px rgba(37,99,235,0.25);
+        }
+        .user-card-howard:hover { box-shadow: 0 20px 50px rgba(37,99,235,0.4); }
+        .user-card-myka {
+            background: linear-gradient(145deg, #4a1036 0%, #9d174d 60%, #db2777 100%);
+            box-shadow: 0 8px 30px rgba(219,39,119,0.25);
+        }
+        .user-card-myka:hover { box-shadow: 0 20px 50px rgba(219,39,119,0.4); }
+
+        .card-noise {
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+            opacity: 0.4; pointer-events: none;
+        }
+        .card-shine {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(ellipse 60% 40% at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ── Avatar circles ── */
+        .avatar-ring { box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 0 0 6px rgba(255,255,255,0.1); }
+
+        /* ── PIN modal ── */
+        #pinModal {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .pin-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .pin-dot.filled {
+            background: currentColor;
+            transform: scale(1.1);
+        }
+        .pin-btn {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            transition: all 0.15s cubic-bezier(.34,1.56,.64,1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pin-btn:active { transform: scale(0.9); }
+
+        .pin-panel-howard .pin-dot { color: #3b82f6; }
+        .pin-panel-howard .pin-btn {
+            background: #eff6ff;
+            color: #1e3a8a;
+            border: 2px solid #bfdbfe;
+        }
+        .pin-panel-howard .pin-btn:hover { background: #dbeafe; border-color: #93c5fd; }
+        .pin-panel-howard .pin-btn.del { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .dark .pin-panel-howard .pin-btn { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.2); }
+        .dark .pin-panel-howard .pin-btn:hover { background: rgba(59,130,246,0.2); }
+        .dark .pin-panel-howard .pin-btn.del { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
+
+        .pin-panel-myka .pin-dot { color: #ec4899; }
+        .pin-panel-myka .pin-btn {
+            background: #fdf2f8;
+            color: #831843;
+            border: 2px solid #fbcfe8;
+        }
+        .pin-panel-myka .pin-btn:hover { background: #fce7f3; border-color: #f9a8d4; }
+        .pin-panel-myka .pin-btn.del { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .dark .pin-panel-myka .pin-dot { color: #f472b6; }
+        .dark .pin-panel-myka .pin-btn { background: rgba(236,72,153,0.12); color: #f9a8d4; border-color: rgba(236,72,153,0.2); }
+        .dark .pin-panel-myka .pin-btn:hover { background: rgba(236,72,153,0.2); }
+        .dark .pin-panel-myka .pin-btn.del { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
+
+        .pin-error { animation: shake 0.4s ease; }
+        @keyframes shake {
+            0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)}
+        }
+
+        /* ── Tabs in dashboard ── */
+        .user-tab-howard { --accent: #2563eb; --accent-bg: #eff6ff; --accent-text: #1e3a8a; }
+        .user-tab-myka   { --accent: #db2777; --accent-bg: #fdf2f8; --accent-text: #831843; }
+        .dark .user-tab-howard { --accent: #3b82f6; --accent-bg: rgba(59,130,246,0.12); --accent-text: #93c5fd; }
+        .dark .user-tab-myka   { --accent: #ec4899; --accent-bg: rgba(236,72,153,0.12); --accent-text: #f9a8d4; }
+
+        .dash-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            background: var(--accent-bg);
+            color: var(--accent-text);
+        }
+
+        /* ── Quiz card accent ── */
+        .quiz-card-accent { background: var(--accent-bg); color: var(--accent); }
+
+        /* ── Test view header ── */
+        #testView.mode-howard header { border-top: 3px solid #2563eb; }
+        #testView.mode-myka   header { border-top: 3px solid #db2777; }
+        .dark #testView.mode-howard header { border-top: 3px solid #3b82f6; }
+        .dark #testView.mode-myka   header { border-top: 3px solid #ec4899; }
+
+        /* ── Entrance animation ── */
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(20px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.5s ease both; }
+        .fade-up-1 { animation-delay: 0.05s; }
+        .fade-up-2 { animation-delay: 0.15s; }
+        .fade-up-3 { animation-delay: 0.25s; }
+        .fade-up-4 { animation-delay: 0.35s; }
+
+        /* ── View transitions ── */
+        .hidden-view { display: none !important; }
+
+        /* ─── scrollbar ── */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+
+        /* ── Progress bar glow ── */
+        .mode-howard #progressBar { background: #2563eb; box-shadow: 0 0 10px rgba(37,99,235,0.4); }
+        .mode-myka   #progressBar { background: #db2777; box-shadow: 0 0 10px rgba(219,39,119,0.4); }
+
+        /* ── Sidebar mobile ── */
+        @media (max-width: 767px) {
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 20px 0 50px rgba(0,0,0,0.15);
+            }
+            .sidebar { position: absolute; height: 100%; }
+        }
+
+        /* ── Option labels ── */
+        .option-label {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mode-howard .option-input:checked + .option-label {
+            border-color: #2563eb; background-color: #eff6ff;
+        }
+        .dark.mode-howard .option-input:checked + .option-label {
+            border-color: #3b82f6; background-color: rgba(59,130,246,0.1);
+        }
+        .mode-howard .option-input:checked + .option-label span:first-child {
+            background-color: #2563eb; color: white; border-color: #2563eb;
+        }
+        .mode-myka .option-input:checked + .option-label {
+            border-color: #db2777; background-color: #fdf2f8;
+        }
+        .dark.mode-myka .option-input:checked + .option-label {
+            border-color: #ec4899; background-color: rgba(236,72,153,0.1);
+        }
+        .mode-myka .option-input:checked + .option-label span:first-child {
+            background-color: #db2777; color: white; border-color: #db2777;
+        }
+
+        /* ── Finish / next button accent ── */
+        #testView.mode-howard #nextBtn { background: #2563eb; }
+        #testView.mode-howard #nextBtn:hover { background: #1d4ed8; }
+        #testView.mode-howard #finishBtn { background: #2563eb; }
+        #testView.mode-myka   #nextBtn { background: #db2777; }
+        #testView.mode-myka   #nextBtn:hover { background: #be185d; }
+        #testView.mode-myka   #finishBtn { background: #db2777; }
+
+        /* ── Grid active state per mode ── */
+        #testView.mode-howard .grid-active { background: #2563eb !important; }
+        #testView.mode-myka   .grid-active { background: #db2777 !important; }
+
+        /* ── Loading spinner ── */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-spinner {
+            width: 18px; height: 18px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body class="bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300">
+
+<!-- ═══════════════════════════════════════════════════════
+     LANDING VIEW
+═══════════════════════════════════════════════════════ -->
+<div id="landingView" class="min-h-screen flex flex-col">
+    <!-- Nav -->
+    <nav class="px-6 md:px-12 py-5 flex justify-between items-center">
+        <div class="flex items-center gap-3 fade-up">
+            <div class="w-9 h-9 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" class="dark:stroke-zinc-900" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <span class="font-display font-bold text-zinc-900 dark:text-white text-lg tracking-tight">QuizSpace</span>
+        </div>
+        <button onclick="AppState.toggleDark()" class="fade-up p-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:ring-2 ring-zinc-300 dark:ring-zinc-600 transition-all">
+            <svg id="sunIcon" class="hidden dark:block" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg id="moonIcon" class="dark:hidden" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+    </nav>
+
+    <!-- Hero -->
+    <div class="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
+        <p class="fade-up fade-up-1 text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-4">Practice Test Platform</p>
+        <h1 class="fade-up fade-up-2 font-display font-extrabold text-5xl md:text-7xl text-zinc-900 dark:text-white leading-none tracking-tight mb-4">
+            Who's studying<br><span class="text-zinc-400 dark:text-zinc-600">today?</span>
+        </h1>
+        <p class="fade-up fade-up-3 text-zinc-500 dark:text-zinc-400 text-base md:text-lg mb-16 max-w-sm">Select your profile to access your personalized quiz library.</p>
+
+        <!-- User cards -->
+        <div class="fade-up fade-up-4 grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl">
+            <!-- Howard -->
+            <div class="user-card user-card-howard p-8 md:p-10 text-left" onclick="AppState.openPin('howard')">
+                <div class="card-noise"></div>
+                <div class="card-shine"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 avatar-ring flex items-center justify-center mb-6 text-2xl font-display font-black text-white">H</div>
+                    <h2 class="font-display font-bold text-white text-2xl md:text-3xl mb-1">Howard</h2>
+                    <p class="text-blue-200 text-sm font-medium mb-6" id="howard-quiz-count">
+                        <span class="loading-spinner"></span>
+                    </p>
+                    <div class="flex items-center gap-2 text-white/60 text-xs font-semibold tracking-wide uppercase">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        PIN Protected
+                    </div>
+                </div>
+            </div>
+
+            <!-- Myka -->
+            <div class="user-card user-card-myka p-8 md:p-10 text-left" onclick="AppState.openPin('myka')">
+                <div class="card-noise"></div>
+                <div class="card-shine" style="background:radial-gradient(ellipse 60% 40% at 70% 20%, rgba(255,255,255,0.15) 0%, transparent 60%)"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 avatar-ring flex items-center justify-center mb-6 text-2xl font-display font-black text-white">M</div>
+                    <h2 class="font-display font-bold text-white text-2xl md:text-3xl mb-1">Myka</h2>
+                    <p class="text-pink-200 text-sm font-medium mb-6" id="myka-quiz-count">
+                        <span class="loading-spinner"></span>
+                    </p>
+                    <div class="flex items-center gap-2 text-white/60 text-xs font-semibold tracking-wide uppercase">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        PIN Protected
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="fade-up mt-10 text-xs text-zinc-400 dark:text-zinc-600">Made with ♥ by Howard — for Myka &amp; himself</p>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     HOME / DASHBOARD VIEW
+═══════════════════════════════════════════════════════ -->
+<div id="homeView" class="hidden-view min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
+    <nav id="dashNav" class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-8 py-4 sticky top-0 z-30 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <button onclick="AppState.backToLanding()" class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 transition-all" title="Back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="flex items-center gap-2">
+                <div id="dashAvatar" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-display font-black text-white"></div>
+                <div>
+                    <p id="dashUserName" class="font-display font-bold text-zinc-900 dark:text-white text-base leading-tight"></p>
+                    <p id="dashUserSub" class="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold"></p>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- Feedback Toggle -->
+            <div class="hidden md:flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-3 py-2 rounded-xl">
+                <span class="text-xs font-bold text-zinc-500 dark:text-zinc-400">Feedback</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="feedbackToggle" class="sr-only peer">
+                    <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+            </div>
+            <!-- Shuffle Toggle -->
+            <div class="hidden md:flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-3 py-2 rounded-xl">
+                <span class="text-xs font-bold text-zinc-500 dark:text-zinc-400">Shuffle</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="shuffleToggle" class="sr-only peer">
+                    <div id="shuffleTrack" class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+            </div>
+            <button onclick="AppState.toggleDark()" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:ring-2 ring-zinc-300 dark:ring-zinc-600 transition-all">
+                <svg class="hidden dark:block" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="dark:hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12 w-full flex-1">
+        <!-- Mobile toggles -->
+        <div class="flex md:hidden gap-3 mb-6">
+            <div class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 flex-1 justify-between">
+                <span class="text-xs font-bold text-zinc-600 dark:text-zinc-300">Feedback</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="feedbackToggleMobile" class="sr-only peer" onchange="document.getElementById('feedbackToggle').checked=this.checked">
+                    <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+            </div>
+            <div class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 flex-1 justify-between">
+                <span class="text-xs font-bold text-zinc-600 dark:text-zinc-300">Shuffle</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="shuffleToggleMobile" class="sr-only peer" onchange="document.getElementById('shuffleToggle').checked=this.checked">
+                    <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <span id="dashBadge" class="dash-badge user-tab-howard mb-3 inline-block">Your Quizzes</span>
+            <h2 class="font-display font-extrabold text-3xl md:text-4xl text-zinc-900 dark:text-white">Quiz Library</h2>
+            <p class="text-zinc-400 dark:text-zinc-500 text-sm mt-1">Select a test to begin your practice session.</p>
+        </div>
+
+        <div id="testGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- injected by engine -->
+        </div>
+    </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     TEST VIEW
+═══════════════════════════════════════════════════════ -->
+<div id="testView" class="h-screen flex flex-col overflow-hidden hidden-view dark:bg-zinc-950">
+    <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center z-40">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <button id="mobileMenuBtn" class="md:hidden p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-300 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <button onclick="Engine.exitTest()" class="hidden md:flex items-center gap-1.5 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 dark:text-zinc-500 text-xs font-semibold shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Back
+            </button>
+            <h1 id="activeTestTitle" class="text-sm md:text-base font-display font-bold text-zinc-800 dark:text-white truncate">Test Title</h1>
+        </div>
+        <button id="finishBtn" class="text-white px-4 md:px-5 py-2 rounded-lg font-bold transition-colors shadow-sm text-xs md:text-sm shrink-0">Finish</button>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden relative">
+        <aside id="sidebar" class="sidebar w-full md:w-72 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col custom-scrollbar overflow-y-auto z-30 transition-all duration-300 transform -translate-x-full md:translate-x-0">
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Questions</h2>
+                    <button onclick="document.getElementById('sidebar').classList.remove('active')" class="md:hidden text-zinc-400 hover:text-zinc-600 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="grid grid-cols-5 gap-2" id="questionGrid"></div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-12 custom-scrollbar bg-zinc-50/80 dark:bg-zinc-950">
+            <div class="max-w-3xl mx-auto pb-20 md:pb-0">
+                <div class="mb-6 md:mb-8">
+                    <div class="flex justify-between text-[11px] mb-2">
+                        <span id="progressText" class="text-zinc-900 dark:text-zinc-200 font-bold uppercase tracking-tight">Question 1 of --</span>
+                    </div>
+                    <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5">
+                        <div id="progressBar" class="h-full rounded-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <div id="questionContainer" class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 md:p-8 shadow-sm">
+                    <div class="mb-6 md:mb-8">
+                        <span class="inline-block px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase mb-3 tracking-widest quiz-card-accent">Question #<span id="currentQNum">1</span></span>
+                        <h3 id="questionText" class="text-lg md:text-xl font-semibold text-zinc-800 dark:text-white leading-relaxed">Loading...</h3>
+                    </div>
+                    <div id="optionsList" class="space-y-3"></div>
+                </div>
+
+                <div class="mt-6 md:mt-8 flex justify-between items-center gap-3">
+                    <button id="prevBtn" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 font-bold text-sm transition-all">Back</button>
+                    <button id="nextBtn" class="flex-[2] md:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-white hover:opacity-90 font-bold text-sm transition-all">Continue</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     RESULT MODAL
+═══════════════════════════════════════════════════════ -->
+<div id="resultModal" class="fixed inset-0 bg-zinc-900/60 dark:bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-sm md:max-w-md w-full p-7 md:p-9 shadow-2xl text-center border border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none" id="resultBg" style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,0.07) 0%, transparent 70%)"></div>
+        <div id="resultIcon" class="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-5 relative z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h2 class="font-display text-2xl font-extrabold text-zinc-900 dark:text-white mb-1 relative z-10">Test Completed!</h2>
+        <p class="text-zinc-400 text-sm mb-5 relative z-10">Here's how you did</p>
+        <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl p-5 mb-2 flex justify-between items-center relative z-10">
+            <div class="text-left">
+                <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mb-1">Score</p>
+                <p id="finalScore" class="text-3xl font-display font-black text-zinc-900 dark:text-white">--</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mb-1">Accuracy</p>
+                <p id="accuracyPercent" class="text-3xl font-display font-black text-zinc-900 dark:text-white">--%</p>
+            </div>
+        </div>
+        <div id="dynamicActions" class="relative z-10 space-y-2 mt-4"></div>
+        <button onclick="AppState.backToLanding()" class="relative z-10 w-full mt-3 py-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-sm">Return Home</button>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PIN MODAL
+═══════════════════════════════════════════════════════ -->
+<div id="pinModal" class="fixed inset-0 bg-zinc-900/70 dark:bg-black/80 z-[60] hidden flex items-center justify-center p-4">
+    <div id="pinPanel" class="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-xs p-7 shadow-2xl border border-zinc-200 dark:border-zinc-800 text-center">
+        <div id="pinAvatar" class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-display font-black text-white mx-auto mb-4"></div>
+        <h3 id="pinTitle" class="font-display font-extrabold text-xl text-zinc-900 dark:text-white mb-1">Enter PIN</h3>
+        <p id="pinSubtitle" class="text-zinc-400 text-sm mb-6">Enter your 4-digit PIN to continue</p>
+
+        <!-- Dots -->
+        <div id="pinDots" class="flex justify-center gap-4 mb-7"></div>
+
+        <!-- Error -->
+        <p id="pinError" class="text-red-500 text-xs font-bold mb-3 opacity-0 transition-opacity">Incorrect PIN. Try again.</p>
+
+        <!-- Keypad -->
+        <div id="pinKeypad" class="grid grid-cols-3 gap-3 justify-items-center">
+            <!-- injected by JS -->
+        </div>
+
+        <button onclick="AppState.closePin()" class="mt-5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 text-sm font-semibold transition-colors">Cancel</button>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS
+     NOTE: We only load engine.js here.
+     Individual quiz script tags are GONE — quizzes are now
+     fetched from the backend API in AppState.loadQuizzes().
+═══════════════════════════════════════════════════════ -->
+<script src="engine.js"></script>
+<script>
+
+// ════════════════════════════════════════════════════════
+// BACKEND URL CONFIGURATION
+// ════════════════════════════════════════════════════════
+// Change this to your actual Render URL after you deploy the backend.
+// Example: 'https://quizspace-backend.onrender.com'
+// Leave it as-is during local development if your backend runs on port 3000.
+const BACKEND_URL = 'http://localhost:3000';
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                   STEP: Replace this with your Render URL after deploying the backend.
+//                   For local testing: use 'http://localhost:3000'
+
+
+// ════════════════════════════════════════════════════════
+// APP STATE — manages landing, PIN, user session
+// ════════════════════════════════════════════════════════
+const AppState = {
+    currentUser: null,   // 'howard' | 'myka'
+    pins: { howard: '1234', myka: '2010' },
+    pinBuffer: '',
+    pinTarget: null,
+
+    // ── Init ────────────────────────────────────────────
+    // async means this function can wait (await) for things like API calls.
+    async init() {
+        if (localStorage.theme === 'dark') document.documentElement.classList.add('dark');
+
+        // Load quizzes from backend BEFORE doing anything else.
+        // The loading spinner is already shown in the HTML.
+        await this.loadQuizzes();
+
+        // Now update the quiz counts on the landing page cards.
+        this.updateQuizCounts();
+
+        // Keyboard support for PIN entry
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('pinModal').classList.contains('hidden')) return;
+            if (e.key >= '0' && e.key <= '9') {
+                this.pinPress(e.key);
+            } else if (e.key === 'Backspace') {
+                this.pinPress('⌫');
+            } else if (e.key === 'Escape') {
+                this.closePin();
+            }
+        });
+    },
+
+    // ── Load Quizzes from Backend ────────────────────────
+    // This is the key new function. It fetches all quizzes from
+    // the backend and stores them in window.QuizRegistry.
+    // Engine.js reads from window.QuizRegistry, so it still works
+    // exactly the same way — it just doesn't know (or care) that
+    // the data came from an API call instead of script tags.
+    async loadQuizzes() {
+        try {
+            // fetch() makes an HTTP request to the backend URL.
+            // We use /api/quizzes with no user filter to get ALL quizzes —
+            // the engine.js filters by user on the client side when rendering.
+            const response = await fetch(`${BACKEND_URL}/api/quizzes`);
+
+            if (!response.ok) {
+                // response.ok is false if the server returned a 4xx or 5xx error
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const quizzes = await response.json();
+            // response.json() parses the JSON text the server sent
+            // and gives us a JavaScript array of quiz objects
+
+            window.QuizRegistry = quizzes;
+            // Populate window.QuizRegistry — this is what Engine reads
+
+            console.log(`✅ Loaded ${quizzes.length} quizzes from backend`);
+
+        } catch (err) {
+            // Something went wrong (network error, server down, etc.)
+            console.error('❌ Failed to load quizzes:', err.message);
+            window.QuizRegistry = [];
+
+            // Show an error message on the landing page cards
+            document.getElementById('howard-quiz-count').textContent = 'Could not connect to server';
+            document.getElementById('myka-quiz-count').textContent = 'Could not connect to server';
+        }
+    },
+
+    toggleDark() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.theme = isDark ? 'dark' : 'light';
+    },
+
+    updateQuizCounts() {
+        const r = window.QuizRegistry || [];
+        const hCount = r.filter(q => !q.user || q.user === 'howard').length;
+        const mCount = r.filter(q => !q.user || q.user === 'myka').length;
+        document.getElementById('howard-quiz-count').textContent = `${hCount} quiz${hCount !== 1 ? 'zes' : ''} available`;
+        document.getElementById('myka-quiz-count').textContent = `${mCount} quiz${mCount !== 1 ? 'zes' : ''} available`;
+    },
+
+    // ── PIN flow ────────────────────────────────────────
+    openPin(user) {
+        this.pinTarget = user;
+        this.pinBuffer = '';
+        const isHoward = user === 'howard';
+        const modal = document.getElementById('pinModal');
+        const panel = document.getElementById('pinPanel');
+        const avatar = document.getElementById('pinAvatar');
+        const title = document.getElementById('pinTitle');
+        const sub = document.getElementById('pinSubtitle');
+
+        panel.className = `bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-xs p-7 shadow-2xl border border-zinc-200 dark:border-zinc-800 text-center pin-panel-${user}`;
+        avatar.className = `w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-display font-black text-white mx-auto mb-4 ${isHoward ? 'bg-blue-600' : 'bg-pink-600'}`;
+        avatar.textContent = isHoward ? 'H' : 'M';
+        title.textContent = isHoward ? "Howard's PIN" : "Myka's PIN";
+        sub.textContent = `Enter your 4-digit PIN to access ${isHoward ? 'Howard' : 'Myka'}'s quizzes`;
+
+        this.renderPinDots();
+        this.renderKeypad(user);
+        document.getElementById('pinError').style.opacity = '0';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    },
+
+    closePin() {
+        const modal = document.getElementById('pinModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        this.pinBuffer = '';
+        this.pinTarget = null;
+    },
+
+    renderPinDots() {
+        const dots = document.getElementById('pinDots');
+        dots.innerHTML = Array.from({length:4}, (_,i) =>
+            `<div class="pin-dot ${i < this.pinBuffer.length ? 'filled' : ''}"></div>`
+        ).join('');
+    },
+
+    renderKeypad(user) {
+        const pad = document.getElementById('pinKeypad');
+        const nums = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+        pad.innerHTML = nums.map(n => {
+            if (n === '') return `<div></div>`;
+            const isDel = n === '⌫';
+            return `<button class="pin-btn ${isDel?'del':''}" onclick="AppState.pinPress('${n}')">${n}</button>`;
+        }).join('');
+    },
+
+    pinPress(val) {
+        if (val === '⌫') {
+            this.pinBuffer = this.pinBuffer.slice(0,-1);
+        } else if (this.pinBuffer.length < 4) {
+            this.pinBuffer += val;
+        }
+        this.renderPinDots();
+        if (this.pinBuffer.length === 4) {
+            setTimeout(() => this.verifyPin(), 150);
+        }
+    },
+
+    verifyPin() {
+        if (this.pinBuffer === this.pins[this.pinTarget]) {
+            const user = this.pinTarget;
+            this.currentUser = user;
+            this.closePin();
+            this.openDashboard(user);
+        } else {
+            const dots = document.getElementById('pinDots');
+            dots.classList.add('pin-error');
+            const err = document.getElementById('pinError');
+            err.style.opacity = '1';
+            dots.addEventListener('animationend', () => {
+                dots.classList.remove('pin-error');
+            }, {once:true});
+            this.pinBuffer = '';
+            setTimeout(() => this.renderPinDots(), 400);
+        }
+    },
+
+    // ── Dashboard ───────────────────────────────────────
+    openDashboard(user) {
+        const isHoward = user === 'howard';
+        document.getElementById('landingView').classList.add('hidden-view');
+        document.getElementById('homeView').classList.remove('hidden-view');
+        document.getElementById('testView').classList.add('hidden-view');
+
+        const avatar = document.getElementById('dashAvatar');
+        avatar.textContent = isHoward ? 'H' : 'M';
+        avatar.className = `w-8 h-8 rounded-lg flex items-center justify-center text-sm font-display font-black text-white ${isHoward ? 'bg-blue-600' : 'bg-pink-600'}`;
+        document.getElementById('dashUserName').textContent = isHoward ? 'Howard' : 'Myka';
+        document.getElementById('dashUserSub').textContent = 'Quiz Library';
+
+        const badge = document.getElementById('dashBadge');
+        badge.className = `dash-badge ${isHoward ? 'user-tab-howard' : 'user-tab-myka'} mb-3 inline-block`;
+        badge.textContent = isHoward ? "Howard's Quizzes" : "Myka's Quizzes";
+
+        const track = document.getElementById('shuffleTrack');
+        if (track) track.className = track.className.replace('peer-checked:bg-blue-500','').replace('peer-checked:bg-pink-500','') + ` peer-checked:bg-${isHoward?'blue':'pink'}-500`;
+
+        Engine.initDashboard(user);
+    },
+
+    backToLanding() {
+        document.getElementById('landingView').classList.remove('hidden-view');
+        document.getElementById('homeView').classList.add('hidden-view');
+        document.getElementById('testView').classList.add('hidden-view');
+        document.getElementById('resultModal').classList.add('hidden');
+        this.currentUser = null;
+    }
+};
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => AppState.init());
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.font-display {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ── Scrollbar ── */
+.custom-scrollbar::-webkit-scrollbar { width: 5px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+
+/* ── Hidden view utility ── */
+.hidden-view { display: none !important; }
+
+/* ── Card hover lift ── */
+.test-card { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+@media (min-width: 768px) {
+    .test-card:hover { transform: translateY(-5px); }
+}
+
+/* ── Sidebar mobile slide-in ── */
+@media (max-width: 767px) {
+    .sidebar.active {
+        transform: translateX(0) !important;
+        box-shadow: 20px 0 50px rgba(0,0,0,0.12);
+    }
+}
