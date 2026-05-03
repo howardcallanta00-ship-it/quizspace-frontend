@@ -3,434 +3,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuizSpace — Practice Tests</title>
+    <title>QuizSpace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class' }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cream: { DEFAULT: '#F7F6F1', dark: '#EFEDE6' },
+                    }
+                }
+            }
+        }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
-        :root {
-            --howard-h: 220;
-            --myka-h: 330;
-        }
-        * { font-family: 'DM Sans', sans-serif; }
-        .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* ── Landing page bg ── */
-        #landingView {
-            background: #f8f7f4;
-            background-image: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(59,130,246,0.06) 0%, transparent 60%),
-                              radial-gradient(ellipse 60% 60% at 80% 80%, rgba(236,72,153,0.06) 0%, transparent 60%);
-        }
-        .dark #landingView {
-            background: #09090b;
-            background-image: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 60%),
-                              radial-gradient(ellipse 60% 60% at 80% 80%, rgba(236,72,153,0.08) 0%, transparent 60%);
-        }
+<style>
+/* ── CSS variables per user ── */
+:root {
+    --accent: #2563eb;
+    --accent-rgb: 37, 99, 235;
+    --accent-light: #eff6ff;
+    --accent-text: #1e3a8a;
+}
+.user-myka {
+    --accent: #db2777;
+    --accent-rgb: 219, 39, 119;
+    --accent-light: #fdf2f8;
+    --accent-text: #831843;
+}
+.dark:root, .dark {
+    --accent-light: rgba(var(--accent-rgb), 0.12);
+    --accent-text: color-mix(in srgb, var(--accent) 80%, white);
+}
 
-        /* ── User profile cards ── */
-        .user-card {
-            position: relative;
-            cursor: pointer;
-            border-radius: 24px;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease;
-        }
-        .user-card:hover { transform: translateY(-6px) scale(1.01); }
-        .user-card-howard {
-            background: linear-gradient(145deg, #1e3a5f 0%, #1e40af 60%, #2563eb 100%);
-            box-shadow: 0 8px 30px rgba(37,99,235,0.25);
-        }
-        .user-card-howard:hover { box-shadow: 0 20px 50px rgba(37,99,235,0.4); }
-        .user-card-myka {
-            background: linear-gradient(145deg, #4a1036 0%, #9d174d 60%, #db2777 100%);
-            box-shadow: 0 8px 30px rgba(219,39,119,0.25);
-        }
-        .user-card-myka:hover { box-shadow: 0 20px 50px rgba(219,39,119,0.4); }
+/* ── Fonts everywhere ── */
+* { font-family: 'Manrope', sans-serif; }
+.font-display { font-family: 'Bricolage Grotesque', sans-serif; }
 
-        .card-noise {
-            position: absolute; inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-            opacity: 0.4; pointer-events: none;
-        }
-        .card-shine {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(ellipse 60% 40% at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
-            pointer-events: none;
-        }
+/* ═══════════════════════════
+   LANDING
+═══════════════════════════ */
+#landingView {
+    background: #F7F6F1;
+    background-image:
+        radial-gradient(ellipse 70% 60% at 15% 10%, rgba(37,99,235,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 55% at 85% 85%, rgba(219,39,119,0.07) 0%, transparent 55%);
+}
+.dark #landingView {
+    background: #0F0F13;
+    background-image:
+        radial-gradient(ellipse 70% 60% at 15% 10%, rgba(59,130,246,0.11) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 55% at 85% 85%, rgba(236,72,153,0.11) 0%, transparent 55%);
+}
 
-        /* ── Avatar circles ── */
-        .avatar-ring { box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 0 0 6px rgba(255,255,255,0.1); }
+/* Landing heading gradient text */
+.hero-title {
+    background: linear-gradient(135deg, #111827 30%, #374151 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.dark .hero-title {
+    background: linear-gradient(135deg, #f4f4f5 30%, #a1a1aa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
 
-        /* ── PIN modal ── */
-        #pinModal {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-        .pin-dot {
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            border: 2px solid currentColor;
-            transition: background 0.2s, transform 0.15s;
-        }
-        .pin-dot.filled {
-            background: currentColor;
-            transform: scale(1.1);
-        }
-        .pin-btn {
-            width: 64px; height: 64px;
-            border-radius: 50%;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 700;
-            transition: all 0.15s cubic-bezier(.34,1.56,.64,1);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .pin-btn:active { transform: scale(0.9); }
+/* Avatar ring */
+.avatar-ring {
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.35),
+                0 0 0 7px rgba(255,255,255,0.1);
+}
 
-        .pin-panel-howard .pin-dot { color: #3b82f6; }
-        .pin-panel-howard .pin-btn {
-            background: #eff6ff;
-            color: #1e3a8a;
-            border: 2px solid #bfdbfe;
-        }
-        .pin-panel-howard .pin-btn:hover { background: #dbeafe; border-color: #93c5fd; }
-        .pin-panel-howard .pin-btn.del { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
-        .dark .pin-panel-howard .pin-btn { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.2); }
-        .dark .pin-panel-howard .pin-btn:hover { background: rgba(59,130,246,0.2); }
-        .dark .pin-panel-howard .pin-btn.del { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
+/* ═══════════════════════════
+   DASHBOARD
+═══════════════════════════ */
+#homeView { background: #F7F6F1; }
+.dark #homeView { background: #0F0F13; }
 
-        .pin-panel-myka .pin-dot { color: #ec4899; }
-        .pin-panel-myka .pin-btn {
-            background: #fdf2f8;
-            color: #831843;
-            border: 2px solid #fbcfe8;
-        }
-        .pin-panel-myka .pin-btn:hover { background: #fce7f3; border-color: #f9a8d4; }
-        .pin-panel-myka .pin-btn.del { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
-        .dark .pin-panel-myka .pin-dot { color: #f472b6; }
-        .dark .pin-panel-myka .pin-btn { background: rgba(236,72,153,0.12); color: #f9a8d4; border-color: rgba(236,72,153,0.2); }
-        .dark .pin-panel-myka .pin-btn:hover { background: rgba(236,72,153,0.2); }
-        .dark .pin-panel-myka .pin-btn.del { background: rgba(239,68,68,0.12); color: #fca5a5; border-color: rgba(239,68,68,0.2); }
+/* Stats chip */
+.stat-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    background: white;
+    border: 1px solid #e4e4e7;
+    color: #52525b;
+}
+.dark .stat-chip {
+    background: #1c1c22;
+    border-color: #3f3f46;
+    color: #a1a1aa;
+}
 
-        .pin-error { animation: shake 0.4s ease; }
-        @keyframes shake {
-            0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)}
-        }
+/* Quiz card */
+.quiz-card {
+    background: white;
+    border: 1.5px solid #e4e4e7;
+}
+.dark .quiz-card {
+    background: #18181f;
+    border-color: #2e2e38;
+}
+.quiz-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 8px 30px rgba(var(--accent-rgb), 0.12);
+}
+.dark .quiz-card:hover {
+    box-shadow: 0 8px 30px rgba(var(--accent-rgb), 0.18);
+}
 
-        /* ── Tabs in dashboard ── */
-        .user-tab-howard { --accent: #2563eb; --accent-bg: #eff6ff; --accent-text: #1e3a8a; }
-        .user-tab-myka   { --accent: #db2777; --accent-bg: #fdf2f8; --accent-text: #831843; }
-        .dark .user-tab-howard { --accent: #3b82f6; --accent-bg: rgba(59,130,246,0.12); --accent-text: #93c5fd; }
-        .dark .user-tab-myka   { --accent: #ec4899; --accent-bg: rgba(236,72,153,0.12); --accent-text: #f9a8d4; }
+/* Card icon box */
+.card-icon-box {
+    background: var(--accent-light);
+    color: var(--accent);
+}
 
-        .dash-badge {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            background: var(--accent-bg);
-            color: var(--accent-text);
-        }
+/* Card start arrow */
+.card-start-arrow { color: var(--accent); }
 
-        /* ── Quiz card accent ── */
-        .quiz-card-accent { background: var(--accent-bg); color: var(--accent); }
+/* Search input */
+.search-input {
+    background: white;
+    border: 1.5px solid #e4e4e7;
+    color: #111827;
+}
+.search-input:focus { outline: none; border-color: var(--accent); }
+.search-input::placeholder { color: #9ca3af; }
+.dark .search-input {
+    background: #18181f;
+    border-color: #2e2e38;
+    color: #f4f4f5;
+}
+.dark .search-input::placeholder { color: #52525b; }
+.dark .search-input:focus { border-color: var(--accent); }
 
-        /* ── Test view header ── */
-        #testView.mode-howard header { border-top: 3px solid #2563eb; }
-        #testView.mode-myka   header { border-top: 3px solid #db2777; }
-        .dark #testView.mode-howard header { border-top: 3px solid #3b82f6; }
-        .dark #testView.mode-myka   header { border-top: 3px solid #ec4899; }
+/* Dashboard nav */
+#dashNav {
+    background: rgba(247,246,241,0.85);
+    border-bottom: 1px solid rgba(228,228,231,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.dark #dashNav {
+    background: rgba(15,15,19,0.85);
+    border-color: rgba(46,46,56,0.7);
+}
 
-        /* ── Entrance animation ── */
-        @keyframes fadeUp {
-            from { opacity:0; transform: translateY(20px); }
-            to   { opacity:1; transform: translateY(0); }
-        }
-        .fade-up { animation: fadeUp 0.5s ease both; }
-        .fade-up-1 { animation-delay: 0.05s; }
-        .fade-up-2 { animation-delay: 0.15s; }
-        .fade-up-3 { animation-delay: 0.25s; }
-        .fade-up-4 { animation-delay: 0.35s; }
+/* Toggle track color variants */
+.toggle-track.on-howard { background: #2563eb; }
+.toggle-track.on-myka   { background: #db2777; }
+.toggle-track.on-green  { background: #22c55e; }
 
-        /* ── View transitions ── */
-        .hidden-view { display: none !important; }
+/* Section heading marker */
+.section-marker {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 8px;
+    vertical-align: middle;
+}
 
-        /* ─── scrollbar ── */
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+/* Badge pill */
+.user-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px 3px 6px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--accent-light);
+    color: var(--accent);
+}
 
-        /* ── Progress bar glow ── */
-        .mode-howard #progressBar { background: #2563eb; box-shadow: 0 0 10px rgba(37,99,235,0.4); }
-        .mode-myka   #progressBar { background: #db2777; box-shadow: 0 0 10px rgba(219,39,119,0.4); }
+/* ═══════════════════════════
+   TEST VIEW
+═══════════════════════════ */
+#testView { background: #F7F6F1; }
+.dark #testView { background: #0F0F13; }
 
-        /* ── Sidebar mobile ── */
-        @media (max-width: 767px) {
-            .sidebar.active {
-                transform: translateX(0);
-                box-shadow: 20px 0 50px rgba(0,0,0,0.15);
-            }
-            .sidebar { position: absolute; height: 100%; }
-        }
+#testView header {
+    background: rgba(247,246,241,0.9);
+    border-bottom: 1px solid rgba(228,228,231,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.dark #testView header {
+    background: rgba(15,15,19,0.9);
+    border-color: rgba(46,46,56,0.7);
+}
 
-        /* ── Option labels ── */
-        .option-label {
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .mode-howard .option-input:checked + .option-label {
-            border-color: #2563eb; background-color: #eff6ff;
-        }
-        .dark.mode-howard .option-input:checked + .option-label {
-            border-color: #3b82f6; background-color: rgba(59,130,246,0.1);
-        }
-        .mode-howard .option-input:checked + .option-label span:first-child {
-            background-color: #2563eb; color: white; border-color: #2563eb;
-        }
-        .mode-myka .option-input:checked + .option-label {
-            border-color: #db2777; background-color: #fdf2f8;
-        }
-        .dark.mode-myka .option-input:checked + .option-label {
-            border-color: #ec4899; background-color: rgba(236,72,153,0.1);
-        }
-        .mode-myka .option-input:checked + .option-label span:first-child {
-            background-color: #db2777; color: white; border-color: #db2777;
-        }
+/* Question container */
+#questionContainer {
+    background: white;
+    border: 1.5px solid #e4e4e7;
+}
+.dark #questionContainer {
+    background: #18181f;
+    border-color: #2e2e38;
+}
 
-        /* ── Finish / next button accent ── */
-        #testView.mode-howard #nextBtn { background: #2563eb; }
-        #testView.mode-howard #nextBtn:hover { background: #1d4ed8; }
-        #testView.mode-howard #finishBtn { background: #2563eb; }
-        #testView.mode-myka   #nextBtn { background: #db2777; }
-        #testView.mode-myka   #nextBtn:hover { background: #be185d; }
-        #testView.mode-myka   #finishBtn { background: #db2777; }
+/* Option label */
+.option-label {
+    background: #fafaf9;
+    border-color: #e4e4e7;
+}
+.dark .option-label {
+    background: #1c1c24;
+    border-color: #2e2e38;
+}
+.option-label:hover {
+    background: white;
+    border-color: #d4d4d8;
+}
+.dark .option-label:hover {
+    background: #22222c;
+    border-color: #3f3f4e;
+}
 
-        /* ── Grid active state per mode ── */
-        #testView.mode-howard .grid-active { background: #2563eb !important; }
-        #testView.mode-myka   .grid-active { background: #db2777 !important; }
+/* Option letter bubble */
+.opt-letter {
+    background: #f4f4f5;
+    border: 1.5px solid #e4e4e7;
+    color: #71717a;
+    transition: all 0.15s;
+}
+.dark .opt-letter {
+    background: #27272f;
+    border-color: #3f3f4e;
+    color: #71717a;
+}
 
-        /* ── Loading spinner ── */
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-spinner {
-            width: 18px; height: 18px;
-            border: 2px solid currentColor;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: inline-block;
-            opacity: 0.5;
-        }
-    </style>
+/* Sidebar */
+.sidebar {
+    background: white;
+    border-right: 1px solid #e4e4e7;
+}
+.dark .sidebar {
+    background: #18181f;
+    border-color: #2e2e38;
+}
+
+/* Grid item base */
+.grid-item {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1.5px solid #e4e4e7;
+    background: white;
+    color: #a1a1aa;
+    transition: all 0.15s;
+    cursor: pointer;
+}
+.dark .grid-item {
+    background: #27272f;
+    border-color: #3f3f4e;
+    color: #71717a;
+}
+.grid-item:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Nav buttons */
+#prevBtn {
+    background: white;
+    border: 1.5px solid #e4e4e7;
+    color: #52525b;
+}
+#prevBtn:hover { background: #f4f4f5; }
+#prevBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.dark #prevBtn { background: #18181f; border-color: #2e2e38; color: #a1a1aa; }
+.dark #prevBtn:hover { background: #27272f; }
+
+#nextBtn, #finishBtn { color: white; }
+#nextBtn:disabled { opacity: 0.5; }
+
+/* ═══════════════════════════
+   RESULT MODAL
+═══════════════════════════ */
+#resultModal {
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    background: rgba(0,0,0,0.55);
+}
+.dark #resultModal { background: rgba(0,0,0,0.75); }
+
+.result-card {
+    background: white;
+    border: 1px solid #e4e4e7;
+}
+.dark .result-card {
+    background: #18181f;
+    border-color: #2e2e38;
+}
+
+/* Animated score text */
+@keyframes scoreReveal {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.score-reveal { animation: scoreReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+/* ═══════════════════════════
+   PIN MODAL
+═══════════════════════════ */
+.pin-card {
+    background: white;
+    border: 1px solid #e4e4e7;
+}
+.dark .pin-card {
+    background: #18181f;
+    border-color: #2e2e38;
+}
+
+/* Loading spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-spin {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.7s linear infinite;
+}
+</style>
 </head>
 
-<body class="bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300">
+<body class="bg-[#F7F6F1] dark:bg-[#0F0F13] transition-colors duration-300">
 
-<!-- ═══════════════════════════════════════════════════════
-     LANDING VIEW
-═══════════════════════════════════════════════════════ -->
-<div id="landingView" class="min-h-screen flex flex-col">
-    <!-- Nav -->
-    <nav class="px-6 md:px-12 py-5 flex justify-between items-center">
-        <div class="flex items-center gap-3 fade-up">
-            <div class="w-9 h-9 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" class="dark:stroke-zinc-900" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+
+<!-- ═══════════════════════════════════════════════════
+     LANDING VIEW — Profile Selection
+═══════════════════════════════════════════════════ -->
+<div id="landingView" class="min-h-svh flex flex-col">
+
+    <!-- Top nav -->
+    <nav class="px-5 md:px-10 py-5 flex items-center justify-between fade-in">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-white flex items-center justify-center shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" class="dark:stroke-zinc-900" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
             </div>
-            <span class="font-display font-bold text-zinc-900 dark:text-white text-lg tracking-tight">QuizSpace</span>
+            <span class="font-display font-bold text-zinc-900 dark:text-white text-base tracking-tight">QuizSpace</span>
         </div>
-        <button onclick="AppState.toggleDark()" class="fade-up p-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:ring-2 ring-zinc-300 dark:ring-zinc-600 transition-all">
-            <svg id="sunIcon" class="hidden dark:block" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg id="moonIcon" class="dark:hidden" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+
+        <button onclick="AppState.toggleDark()" id="darkBtn"
+            class="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
+            <!-- sun -->
+            <svg class="hidden dark:block" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <!-- moon -->
+            <svg class="dark:hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
     </nav>
 
-    <!-- Hero -->
-    <div class="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
-        <p class="fade-up fade-up-1 text-xs font-bold tracking-[0.2em] uppercase text-zinc-400 dark:text-zinc-500 mb-4">Practice Test Platform</p>
-        <h1 class="fade-up fade-up-2 font-display font-extrabold text-5xl md:text-7xl text-zinc-900 dark:text-white leading-none tracking-tight mb-4">
-            Who's studying<br><span class="text-zinc-400 dark:text-zinc-600">today?</span>
-        </h1>
-        <p class="fade-up fade-up-3 text-zinc-500 dark:text-zinc-400 text-base md:text-lg mb-16 max-w-sm">Select your profile to access your personalized quiz library.</p>
+    <!-- Hero content -->
+    <div class="flex-1 flex flex-col items-center justify-center px-5 py-10 text-center">
 
-        <!-- User cards -->
-        <div class="fade-up fade-up-4 grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-2xl">
+        <p class="fade-up delay-1 text-[10px] font-bold tracking-[0.22em] uppercase text-zinc-400 dark:text-zinc-500 mb-4">Practice Test Platform</p>
+
+        <h1 class="fade-up delay-2 font-display font-extrabold text-[2.8rem] md:text-[4.5rem] leading-[0.95] tracking-tight mb-5 hero-title">
+            Who's studying<br>today?
+        </h1>
+
+        <p class="fade-up delay-3 text-zinc-500 dark:text-zinc-400 text-[15px] mb-12 max-w-xs leading-relaxed">
+            Select your profile to open your personal quiz library.
+        </p>
+
+        <!-- Profile cards -->
+        <div class="fade-up delay-4 w-full max-w-xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+
             <!-- Howard -->
-            <div class="user-card user-card-howard p-8 md:p-10 text-left" onclick="AppState.openPin('howard')">
-                <div class="card-noise"></div>
-                <div class="card-shine"></div>
+            <div class="profile-card profile-card-howard p-7 md:p-8 text-left" onclick="AppState.openPin('howard')">
+                <div class="card-gloss"></div>
+                <div class="card-grid-pattern"></div>
                 <div class="relative z-10">
-                    <div class="w-16 h-16 rounded-2xl bg-white/20 avatar-ring flex items-center justify-center mb-6 text-2xl font-display font-black text-white">H</div>
-                    <h2 class="font-display font-bold text-white text-2xl md:text-3xl mb-1">Howard</h2>
-                    <p class="text-blue-200 text-sm font-medium mb-6" id="howard-quiz-count">
-                        <span class="loading-spinner"></span>
+                    <div class="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm avatar-ring flex items-center justify-center font-display font-black text-white text-xl mb-5">H</div>
+                    <h2 class="font-display font-bold text-white text-2xl md:text-3xl leading-tight mb-1">Howard</h2>
+                    <p class="text-blue-200/80 text-[13px] font-medium mb-6" id="howard-quiz-count">
+                        <span class="loading-spin"></span>
                     </p>
-                    <div class="flex items-center gap-2 text-white/60 text-xs font-semibold tracking-wide uppercase">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        PIN Protected
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-1.5 text-white/50 text-[11px] font-semibold uppercase tracking-wider">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            PIN protected
+                        </span>
+                        <span class="flex items-center gap-1 text-white/60 text-[12px] font-bold">
+                            Enter
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </span>
                     </div>
                 </div>
             </div>
 
             <!-- Myka -->
-            <div class="user-card user-card-myka p-8 md:p-10 text-left" onclick="AppState.openPin('myka')">
-                <div class="card-noise"></div>
-                <div class="card-shine" style="background:radial-gradient(ellipse 60% 40% at 70% 20%, rgba(255,255,255,0.15) 0%, transparent 60%)"></div>
+            <div class="profile-card profile-card-myka p-7 md:p-8 text-left" onclick="AppState.openPin('myka')">
+                <div class="card-gloss" style="background:radial-gradient(ellipse 70% 50% at 70% 15%, rgba(255,255,255,0.18) 0%, transparent 65%)"></div>
+                <div class="card-grid-pattern"></div>
                 <div class="relative z-10">
-                    <div class="w-16 h-16 rounded-2xl bg-white/20 avatar-ring flex items-center justify-center mb-6 text-2xl font-display font-black text-white">M</div>
-                    <h2 class="font-display font-bold text-white text-2xl md:text-3xl mb-1">Myka</h2>
-                    <p class="text-pink-200 text-sm font-medium mb-6" id="myka-quiz-count">
-                        <span class="loading-spinner"></span>
+                    <div class="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm avatar-ring flex items-center justify-center font-display font-black text-white text-xl mb-5">M</div>
+                    <h2 class="font-display font-bold text-white text-2xl md:text-3xl leading-tight mb-1">Myka</h2>
+                    <p class="text-pink-200/80 text-[13px] font-medium mb-6" id="myka-quiz-count">
+                        <span class="loading-spin"></span>
                     </p>
-                    <div class="flex items-center gap-2 text-white/60 text-xs font-semibold tracking-wide uppercase">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        PIN Protected
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-1.5 text-white/50 text-[11px] font-semibold uppercase tracking-wider">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            PIN protected
+                        </span>
+                        <span class="flex items-center gap-1 text-white/60 text-[12px] font-bold">
+                            Enter
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <p class="fade-up mt-10 text-xs text-zinc-400 dark:text-zinc-600">Made with ♥ by Howard — for Myka &amp; himself</p>
+        <p class="fade-up delay-5 mt-10 text-[11px] text-zinc-400 dark:text-zinc-600">
+            Made with ♥ by Howard — for Myka &amp; himself
+        </p>
     </div>
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════
      HOME / DASHBOARD VIEW
-═══════════════════════════════════════════════════════ -->
-<div id="homeView" class="hidden-view min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
-    <nav id="dashNav" class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-8 py-4 sticky top-0 z-30 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <button onclick="AppState.backToLanding()" class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 transition-all" title="Back">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+═══════════════════════════════════════════════════ -->
+<div id="homeView" class="hidden-view min-h-svh flex flex-col">
+
+    <!-- Sticky nav -->
+    <nav id="dashNav" class="sticky top-0 z-30 px-4 md:px-8 py-3.5 flex items-center justify-between gap-4">
+
+        <!-- Left: user identity -->
+        <div class="flex items-center gap-3 min-w-0">
+            <!-- Switch user button -->
+            <button onclick="AppState.switchUser()"
+                title="Switch user"
+                class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 dark:text-zinc-500 transition-all shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <div class="flex items-center gap-2">
-                <div id="dashAvatar" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-display font-black text-white"></div>
-                <div>
-                    <p id="dashUserName" class="font-display font-bold text-zinc-900 dark:text-white text-base leading-tight"></p>
-                    <p id="dashUserSub" class="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold"></p>
-                </div>
+            <div id="dashAvatar" class="w-8 h-8 rounded-xl flex items-center justify-center font-display font-black text-white text-sm shrink-0"></div>
+            <div class="min-w-0">
+                <p id="dashUserName" class="font-display font-bold text-zinc-900 dark:text-white text-[15px] leading-tight truncate"></p>
+                <p id="dashUserSub" class="text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase tracking-wide">Quiz Library</p>
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <!-- Feedback Toggle -->
-            <div class="hidden md:flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-3 py-2 rounded-xl">
-                <span class="text-xs font-bold text-zinc-500 dark:text-zinc-400">Feedback</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="feedbackToggle" class="sr-only peer">
-                    <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
-                </label>
+
+        <!-- Right: controls -->
+        <div class="flex items-center gap-2 shrink-0">
+            <!-- Feedback toggle -->
+            <div class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
+                <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 select-none">Feedback</span>
+                <div id="feedbackTrack" class="toggle-track on-green" onclick="AppState.toggleFeedback(this)">
+                    <div class="toggle-thumb"></div>
+                    <input type="checkbox" id="feedbackToggle" class="sr-only">
+                </div>
             </div>
-            <!-- Shuffle Toggle -->
-            <div class="hidden md:flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 px-3 py-2 rounded-xl">
-                <span class="text-xs font-bold text-zinc-500 dark:text-zinc-400">Shuffle</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="shuffleToggle" class="sr-only peer">
-                    <div id="shuffleTrack" class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
-                </label>
+            <!-- Shuffle toggle -->
+            <div class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
+                <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 select-none">Shuffle</span>
+                <div id="shuffleTrack" class="toggle-track" onclick="AppState.toggleShuffle(this)">
+                    <div class="toggle-thumb"></div>
+                    <input type="checkbox" id="shuffleToggle" class="sr-only">
+                </div>
             </div>
-            <button onclick="AppState.toggleDark()" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:ring-2 ring-zinc-300 dark:ring-zinc-600 transition-all">
-                <svg class="hidden dark:block" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                <svg class="dark:hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <!-- Dark mode -->
+            <button onclick="AppState.toggleDark()"
+                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
+                <svg class="hidden dark:block" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="dark:hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             </button>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12 w-full flex-1">
-        <!-- Mobile toggles -->
-        <div class="flex md:hidden gap-3 mb-6">
-            <div class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 flex-1 justify-between">
-                <span class="text-xs font-bold text-zinc-600 dark:text-zinc-300">Feedback</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="feedbackToggleMobile" class="sr-only peer" onchange="document.getElementById('feedbackToggle').checked=this.checked">
-                    <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
-                </label>
+    <!-- Main content -->
+    <main class="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-7 md:py-10">
+
+        <!-- Mobile toggles row -->
+        <div class="flex sm:hidden gap-2.5 mb-6">
+            <button onclick="AppState.toggleFeedback(document.getElementById('feedbackTrackMob'))"
+                class="flex-1 flex items-center justify-between px-3 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
+                <span class="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">Feedback</span>
+                <div id="feedbackTrackMob" class="toggle-track on-green">
+                    <div class="toggle-thumb"></div>
+                </div>
+            </button>
+            <button onclick="AppState.toggleShuffle(document.getElementById('shuffleTrackMob'))"
+                class="flex-1 flex items-center justify-between px-3 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
+                <span class="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">Shuffle</span>
+                <div id="shuffleTrackMob" class="toggle-track">
+                    <div class="toggle-thumb"></div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Header row -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+                <div class="user-badge mb-2.5" id="dashBadge">
+                    <div class="w-2 h-2 rounded-full bg-current opacity-70"></div>
+                    Howard's Quizzes
+                </div>
+                <h2 class="font-display font-extrabold text-2xl md:text-3xl text-zinc-900 dark:text-white leading-tight">Quiz Library</h2>
+                <div class="flex items-center gap-3 mt-2" id="statsRow"></div>
             </div>
-            <div class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 flex-1 justify-between">
-                <span class="text-xs font-bold text-zinc-600 dark:text-zinc-300">Shuffle</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="shuffleToggleMobile" class="sr-only peer" onchange="document.getElementById('shuffleToggle').checked=this.checked">
-                    <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
-                </label>
+
+            <!-- Search bar — NEW FEATURE -->
+            <div class="search-wrap w-full sm:w-56 md:w-72 shrink-0">
+                <svg class="text-zinc-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input id="searchInput" type="text" autocomplete="off"
+                    placeholder="Search quizzes…"
+                    class="search-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium transition-all"
+                    oninput="AppState.filterQuizCards(this.value)">
             </div>
         </div>
 
-        <div class="mb-8">
-            <span id="dashBadge" class="dash-badge user-tab-howard mb-3 inline-block">Your Quizzes</span>
-            <h2 class="font-display font-extrabold text-3xl md:text-4xl text-zinc-900 dark:text-white">Quiz Library</h2>
-            <p class="text-zinc-400 dark:text-zinc-500 text-sm mt-1">Select a test to begin your practice session.</p>
-        </div>
+        <!-- Quiz card grid -->
+        <div id="testGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
-        <div id="testGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- injected by engine -->
+        <!-- No results state (shown by search filter) -->
+        <div id="noResults" class="hidden text-center py-16 text-zinc-400 dark:text-zinc-600">
+            <svg class="mx-auto mb-3 opacity-30" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <p class="font-bold text-sm">No quizzes match that search</p>
+            <p class="text-xs mt-1 opacity-70">Try a different keyword</p>
         </div>
     </main>
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════
      TEST VIEW
-═══════════════════════════════════════════════════════ -->
-<div id="testView" class="h-screen flex flex-col overflow-hidden hidden-view dark:bg-zinc-950">
-    <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center z-40">
-        <div class="flex items-center gap-3 overflow-hidden">
-            <button id="mobileMenuBtn" class="md:hidden p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-300 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+═══════════════════════════════════════════════════ -->
+<div id="testView" class="h-svh flex flex-col overflow-hidden hidden-view">
+
+    <!-- Header -->
+    <header class="px-4 md:px-6 py-3 md:py-4 flex items-center justify-between z-20">
+        <div class="flex items-center gap-2 overflow-hidden">
+            <!-- Mobile menu -->
+            <button id="mobileMenuBtn"
+                class="md:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 transition-all shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <button onclick="Engine.exitTest()" class="hidden md:flex items-center gap-1.5 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 dark:text-zinc-500 text-xs font-semibold shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                Back
+            <!-- Back (desktop) -->
+            <button onclick="Engine.exitTest()"
+                class="hidden md:flex items-center gap-1 px-3 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 dark:text-zinc-500 text-xs font-semibold transition-all shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Library
             </button>
-            <h1 id="activeTestTitle" class="text-sm md:text-base font-display font-bold text-zinc-800 dark:text-white truncate">Test Title</h1>
+            <h1 id="activeTestTitle" class="font-display font-bold text-zinc-800 dark:text-white text-sm md:text-base truncate"></h1>
         </div>
-        <button id="finishBtn" class="text-white px-4 md:px-5 py-2 rounded-lg font-bold transition-colors shadow-sm text-xs md:text-sm shrink-0">Finish</button>
+        <button id="finishBtn"
+            class="px-4 py-2 rounded-xl text-white text-xs md:text-sm font-bold transition-opacity hover:opacity-85 shrink-0">
+            Finish
+        </button>
     </header>
 
+    <!-- Body -->
     <div class="flex-1 flex overflow-hidden relative">
-        <aside id="sidebar" class="sidebar w-full md:w-72 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col custom-scrollbar overflow-y-auto z-30 transition-all duration-300 transform -translate-x-full md:translate-x-0">
-            <div class="p-5">
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar w-64 md:w-60 flex flex-col custom-scrollbar overflow-y-auto">
+            <div class="p-5 pt-4">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Questions</h2>
-                    <button onclick="document.getElementById('sidebar').classList.remove('active')" class="md:hidden text-zinc-400 hover:text-zinc-600 p-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <span class="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">Questions</span>
+                    <button onclick="document.getElementById('sidebar').classList.remove('active')"
+                        class="md:hidden text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
-                <div class="grid grid-cols-5 gap-2" id="questionGrid"></div>
+                <div id="questionGrid" class="grid grid-cols-5 gap-1.5"></div>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-12 custom-scrollbar bg-zinc-50/80 dark:bg-zinc-950">
-            <div class="max-w-3xl mx-auto pb-20 md:pb-0">
-                <div class="mb-6 md:mb-8">
-                    <div class="flex justify-between text-[11px] mb-2">
-                        <span id="progressText" class="text-zinc-900 dark:text-zinc-200 font-bold uppercase tracking-tight">Question 1 of --</span>
+        <!-- Main question area -->
+        <main class="flex-1 overflow-y-auto px-4 md:px-10 py-6 md:py-10 custom-scrollbar">
+            <div class="max-w-2xl mx-auto pb-20 md:pb-4">
+
+                <!-- Progress -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="progressText" class="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">Question 1 of –</span>
+                        <span id="progressPct" class="text-[11px] font-bold text-zinc-400 dark:text-zinc-500">0%</span>
                     </div>
-                    <div class="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5">
+                    <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                         <div id="progressBar" class="h-full rounded-full transition-all duration-500" style="width:0%"></div>
                     </div>
                 </div>
 
-                <div id="questionContainer" class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 md:p-8 shadow-sm">
-                    <div class="mb-6 md:mb-8">
-                        <span class="inline-block px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase mb-3 tracking-widest quiz-card-accent">Question #<span id="currentQNum">1</span></span>
-                        <h3 id="questionText" class="text-lg md:text-xl font-semibold text-zinc-800 dark:text-white leading-relaxed">Loading...</h3>
+                <!-- Question card -->
+                <div id="questionContainer" class="rounded-2xl p-5 md:p-8 shadow-sm mb-5">
+                    <div class="mb-5 md:mb-7">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest mb-3 card-icon-box">
+                            Question #<span id="currentQNum">1</span>
+                        </span>
+                        <h3 id="questionText" class="text-[17px] md:text-xl font-semibold text-zinc-800 dark:text-zinc-100 leading-relaxed">Loading…</h3>
                     </div>
-                    <div id="optionsList" class="space-y-3"></div>
+                    <div id="optionsList" class="space-y-2.5"></div>
                 </div>
 
-                <div class="mt-6 md:mt-8 flex justify-between items-center gap-3">
-                    <button id="prevBtn" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 font-bold text-sm transition-all">Back</button>
-                    <button id="nextBtn" class="flex-[2] md:flex-none flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-white hover:opacity-90 font-bold text-sm transition-all">Continue</button>
+                <!-- Nav buttons -->
+                <div class="flex items-center gap-3">
+                    <button id="prevBtn"
+                        class="flex-1 md:flex-none py-3 px-6 rounded-xl font-bold text-sm transition-all">
+                        ← Back
+                    </button>
+                    <button id="nextBtn"
+                        class="flex-[2] md:flex-none py-3 px-8 rounded-xl font-bold text-sm transition-all">
+                        Continue →
+                    </button>
                 </div>
             </div>
         </main>
@@ -438,210 +629,318 @@
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════
      RESULT MODAL
-═══════════════════════════════════════════════════════ -->
-<div id="resultModal" class="fixed inset-0 bg-zinc-900/60 dark:bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl max-w-sm md:max-w-md w-full p-7 md:p-9 shadow-2xl text-center border border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
-        <div class="absolute inset-0 pointer-events-none" id="resultBg" style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,0.07) 0%, transparent 70%)"></div>
-        <div id="resultIcon" class="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-5 relative z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+═══════════════════════════════════════════════════ -->
+<div id="resultModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <!-- Confetti container -->
+    <div id="confettiBox" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+    <div class="result-card relative z-10 rounded-3xl max-w-sm w-full p-7 md:p-9 shadow-2xl text-center overflow-hidden">
+        <!-- Bg glow -->
+        <div id="resultBg" class="absolute inset-0 pointer-events-none"></div>
+
+        <!-- Icon -->
+        <div id="resultIcon" class="relative z-10 w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <h2 class="font-display text-2xl font-extrabold text-zinc-900 dark:text-white mb-1 relative z-10">Test Completed!</h2>
-        <p class="text-zinc-400 text-sm mb-5 relative z-10">Here's how you did</p>
-        <div class="bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl p-5 mb-2 flex justify-between items-center relative z-10">
+
+        <h2 class="relative z-10 font-display font-extrabold text-[1.6rem] text-zinc-900 dark:text-white mb-1">Session Complete!</h2>
+        <p class="relative z-10 text-zinc-400 dark:text-zinc-500 text-sm mb-6">Here's how you did</p>
+
+        <!-- Score display -->
+        <div class="relative z-10 bg-zinc-50 dark:bg-zinc-800/60 rounded-2xl p-5 mb-4 grid grid-cols-2 gap-4 score-reveal">
             <div class="text-left">
-                <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mb-1">Score</p>
-                <p id="finalScore" class="text-3xl font-display font-black text-zinc-900 dark:text-white">--</p>
+                <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mb-1.5">Score</p>
+                <p id="finalScore" class="font-display font-black text-3xl text-zinc-900 dark:text-white">–</p>
             </div>
             <div class="text-right">
-                <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mb-1">Accuracy</p>
-                <p id="accuracyPercent" class="text-3xl font-display font-black text-zinc-900 dark:text-white">--%</p>
+                <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mb-1.5">Accuracy</p>
+                <p id="accuracyPercent" class="font-display font-black text-3xl text-zinc-900 dark:text-white">–%</p>
             </div>
         </div>
-        <div id="dynamicActions" class="relative z-10 space-y-2 mt-4"></div>
-        <button onclick="AppState.backToLanding()" class="relative z-10 w-full mt-3 py-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-sm">Return Home</button>
+
+        <!-- Dynamic action buttons (retake mistakes, retake all) -->
+        <div id="dynamicActions" class="relative z-10 space-y-2 mb-2"></div>
+
+        <!-- Back to Library — stays on dashboard -->
+        <button onclick="AppState.backToDashboard()"
+            class="relative z-10 w-full py-3 mt-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-xl font-bold text-sm transition-all">
+            ← Back to Library
+        </button>
+
+        <!-- Switch user (subtle, secondary) -->
+        <button onclick="AppState.switchUser()"
+            class="relative z-10 mt-3 text-xs text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 font-semibold transition-colors">
+            Switch user
+        </button>
     </div>
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════
      PIN MODAL
-═══════════════════════════════════════════════════════ -->
-<div id="pinModal" class="fixed inset-0 bg-zinc-900/70 dark:bg-black/80 z-[60] hidden flex items-center justify-center p-4">
-    <div id="pinPanel" class="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-xs p-7 shadow-2xl border border-zinc-200 dark:border-zinc-800 text-center">
-        <div id="pinAvatar" class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-display font-black text-white mx-auto mb-4"></div>
-        <h3 id="pinTitle" class="font-display font-extrabold text-xl text-zinc-900 dark:text-white mb-1">Enter PIN</h3>
-        <p id="pinSubtitle" class="text-zinc-400 text-sm mb-6">Enter your 4-digit PIN to continue</p>
+═══════════════════════════════════════════════════ -->
+<div id="pinModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-zinc-900/60 dark:bg-black/75">
+    <div id="pinPanel" class="pin-card rounded-3xl w-full max-w-xs p-7 shadow-2xl text-center">
+        <!-- Avatar -->
+        <div id="pinAvatar" class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center font-display font-black text-white text-xl"></div>
+        <h3 id="pinTitle" class="font-display font-extrabold text-xl text-zinc-900 dark:text-white mb-1"></h3>
+        <p id="pinSubtitle" class="text-zinc-400 dark:text-zinc-500 text-[13px] mb-6"></p>
 
         <!-- Dots -->
-        <div id="pinDots" class="flex justify-center gap-4 mb-7"></div>
-
+        <div id="pinDots" class="flex justify-center gap-3.5 mb-2"></div>
         <!-- Error -->
-        <p id="pinError" class="text-red-500 text-xs font-bold mb-3 opacity-0 transition-opacity">Incorrect PIN. Try again.</p>
+        <p id="pinError" class="text-red-500 text-[11px] font-bold mt-2 mb-4 opacity-0 transition-opacity h-4">Incorrect PIN. Try again.</p>
 
         <!-- Keypad -->
-        <div id="pinKeypad" class="grid grid-cols-3 gap-3 justify-items-center">
-            <!-- injected by JS -->
-        </div>
+        <div id="pinKeypad" class="grid grid-cols-3 gap-3 justify-items-center mt-1"></div>
 
-        <button onclick="AppState.closePin()" class="mt-5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 text-sm font-semibold transition-colors">Cancel</button>
+        <button onclick="AppState.closePin()"
+            class="mt-5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 text-[13px] font-semibold transition-colors">
+            Cancel
+        </button>
     </div>
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════
      SCRIPTS
-     NOTE: We only load engine.js here.
-     Individual quiz script tags are GONE — quizzes are now
-     fetched from the backend API in AppState.loadQuizzes().
-═══════════════════════════════════════════════════════ -->
+═══════════════════════════════════════════════════ -->
 <script src="engine.js"></script>
 <script>
-
-// ════════════════════════════════════════════════════════
-// BACKEND URL CONFIGURATION
-// ════════════════════════════════════════════════════════
-// Change this to your actual Render URL after you deploy the backend.
-// Example: 'https://quizspace-backend.onrender.com'
-// Leave it as-is during local development if your backend runs on port 3000.
-const BACKEND_URL = 'https://quizspace-backend.onrender.com';
-//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                   STEP: Replace this with your Render URL after deploying the backend.
-//                   For local testing: use 'http://localhost:3000'
+// ══════════════════════════════════════════════════════════
+// BACKEND URL
+// ══════════════════════════════════════════════════════════
+const BACKEND_URL = 'https://YOUR-RENDER-APP-NAME.onrender.com';
+// ↑ Replace this with your actual Render URL after deploying the backend.
+//   For local testing use: 'http://localhost:3000'
 
 
-// ════════════════════════════════════════════════════════
-// APP STATE — manages landing, PIN, user session
-// ════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════
+function setView(show) {
+    ['landingView','homeView','testView'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden-view', id !== show);
+    });
+}
+
+// Animated counter for results
+function animateCounter(el, from, to, suffix = '') {
+    const dur = 900, start = performance.now();
+    const tick = now => {
+        const t = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(from + (to - from) * ease) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+}
+
+// Confetti burst
+function spawnConfetti(count = 48) {
+    const box = document.getElementById('confettiBox');
+    box.innerHTML = '';
+    const colors = ['#2563eb','#db2777','#f59e0b','#22c55e','#8b5cf6','#f97316','#06b6d4'];
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.cssText = `
+            left: ${20 + Math.random() * 60}%;
+            top: ${10 + Math.random() * 20}%;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            width: ${5 + Math.random() * 7}px;
+            height: ${5 + Math.random() * 7}px;
+            animation-delay: ${Math.random() * 0.4}s;
+            animation-duration: ${1.0 + Math.random() * 0.7}s;
+            transform-origin: center;
+        `;
+        box.appendChild(el);
+    }
+    setTimeout(() => { box.innerHTML = ''; }, 2500);
+}
+
+// Question slide animation (layered on top of engine.js bindings)
+function slideQuestion(dir) {
+    const qc = document.getElementById('questionContainer');
+    qc.classList.remove('slide-forward', 'slide-back');
+    void qc.offsetWidth; // reflow trick to restart animation
+    qc.classList.add(dir === 'fwd' ? 'slide-forward' : 'slide-back');
+}
+document.getElementById('prevBtn').addEventListener('click', () => slideQuestion('back'));
+document.getElementById('nextBtn').addEventListener('click', () => slideQuestion('fwd'));
+
+// Update progress % label (engine only sets the bar width)
+const origRenderQ = Engine.renderQuestion.bind(Engine);
+Engine.renderQuestion = function() {
+    origRenderQ();
+    const pct = Math.round(((this.currentIdx + 1) / (this.activeQuestions.length || 1)) * 100);
+    const pctEl = document.getElementById('progressPct');
+    if (pctEl) pctEl.textContent = pct + '%';
+};
+
+// Hook submitTest to add animated counter + confetti
+const origSubmit = Engine.submitTest.bind(Engine);
+Engine.submitTest = function() {
+    origSubmit();
+    // Run post-submit enhancements after the modal is visible
+    setTimeout(() => {
+        const scoreText = document.getElementById('finalScore').textContent;
+        const accText   = document.getElementById('accuracyPercent').textContent;
+        const [scoreNum, totalNum] = scoreText.split('/').map(s => parseInt(s.trim()));
+        const pct = parseInt(accText);
+
+        // Reset to zero then animate up
+        document.getElementById('finalScore').textContent = `0 / ${totalNum}`;
+        document.getElementById('accuracyPercent').textContent = '0%';
+        animateCounter(document.getElementById('finalScore'), 0, scoreNum, ` / ${totalNum}`);
+
+        // Animate accuracy separately
+        const accEl = document.getElementById('accuracyPercent');
+        const accDur = 900, accStart = performance.now();
+        const accTick = now => {
+            const t = Math.min((now - accStart) / accDur, 1);
+            const ease = 1 - Math.pow(1 - t, 3);
+            accEl.textContent = Math.round(pct * ease) + '%';
+            if (t < 1) requestAnimationFrame(accTick);
+        };
+        requestAnimationFrame(accTick);
+
+        // Confetti for good scores
+        if (!isNaN(pct) && pct >= 70) spawnConfetti();
+    }, 80);
+};
+
+
+// ══════════════════════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════════════════════
 const AppState = {
-    currentUser: null,   // 'howard' | 'myka'
+    currentUser: null,
     pins: { howard: '1234', myka: '2010' },
     pinBuffer: '',
     pinTarget: null,
+    _feedbackOn: true,  // default feedback ON
+    _shuffleOn:  false,
 
-    // ── Init ────────────────────────────────────────────
-    // async means this function can wait (await) for things like API calls.
+    // ── Init ──────────────────────────────────────────────
     async init() {
         if (localStorage.theme === 'dark') document.documentElement.classList.add('dark');
 
-        // Load quizzes from backend BEFORE doing anything else.
-        // The loading spinner is already shown in the HTML.
-        await this.loadQuizzes();
-
-        // Now update the quiz counts on the landing page cards.
-        this.updateQuizCounts();
-
-        // Keyboard support for PIN entry
-        document.addEventListener('keydown', (e) => {
+        // Keyboard PIN support
+        document.addEventListener('keydown', e => {
             if (document.getElementById('pinModal').classList.contains('hidden')) return;
-            if (e.key >= '0' && e.key <= '9') {
-                this.pinPress(e.key);
-            } else if (e.key === 'Backspace') {
-                this.pinPress('⌫');
-            } else if (e.key === 'Escape') {
-                this.closePin();
-            }
+            if (e.key >= '0' && e.key <= '9') this.pinPress(e.key);
+            else if (e.key === 'Backspace') this.pinPress('⌫');
+            else if (e.key === 'Escape') this.closePin();
         });
+
+        // Load quizzes from backend
+        await this.loadQuizzes();
+        this.updateQuizCounts();
     },
 
-    // ── Load Quizzes from Backend ────────────────────────
-    // This is the key new function. It fetches all quizzes from
-    // the backend and stores them in window.QuizRegistry.
-    // Engine.js reads from window.QuizRegistry, so it still works
-    // exactly the same way — it just doesn't know (or care) that
-    // the data came from an API call instead of script tags.
+    // ── Backend fetch ──────────────────────────────────────
     async loadQuizzes() {
         try {
-            // fetch() makes an HTTP request to the backend URL.
-            // We use /api/quizzes with no user filter to get ALL quizzes —
-            // the engine.js filters by user on the client side when rendering.
-            const response = await fetch(`${BACKEND_URL}/api/quizzes`);
-
-            if (!response.ok) {
-                // response.ok is false if the server returned a 4xx or 5xx error
-                throw new Error(`Server error: ${response.status}`);
-            }
-
-            const quizzes = await response.json();
-            // response.json() parses the JSON text the server sent
-            // and gives us a JavaScript array of quiz objects
-
-            window.QuizRegistry = quizzes;
-            // Populate window.QuizRegistry — this is what Engine reads
-
-            console.log(`✅ Loaded ${quizzes.length} quizzes from backend`);
-
+            const res = await fetch(`${BACKEND_URL}/api/quizzes`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            window.QuizRegistry = await res.json();
+            console.log(`✅ Loaded ${window.QuizRegistry.length} quizzes`);
         } catch (err) {
-            // Something went wrong (network error, server down, etc.)
-            console.error('❌ Failed to load quizzes:', err.message);
+            console.error('❌ Could not load quizzes:', err.message);
             window.QuizRegistry = [];
-
-            // Show an error message on the landing page cards
-            document.getElementById('howard-quiz-count').textContent = 'Could not connect to server';
-            document.getElementById('myka-quiz-count').textContent = 'Could not connect to server';
+            ['howard-quiz-count','myka-quiz-count'].forEach(id => {
+                document.getElementById(id).textContent = 'Could not connect to server';
+            });
         }
-    },
-
-    toggleDark() {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.theme = isDark ? 'dark' : 'light';
     },
 
     updateQuizCounts() {
         const r = window.QuizRegistry || [];
-        const hCount = r.filter(q => !q.user || q.user === 'howard').length;
-        const mCount = r.filter(q => !q.user || q.user === 'myka').length;
-        document.getElementById('howard-quiz-count').textContent = `${hCount} quiz${hCount !== 1 ? 'zes' : ''} available`;
-        document.getElementById('myka-quiz-count').textContent = `${mCount} quiz${mCount !== 1 ? 'zes' : ''} available`;
+        const hN = r.filter(q => !q.user || q.user === 'howard').length;
+        const mN = r.filter(q => !q.user || q.user === 'myka').length;
+        document.getElementById('howard-quiz-count').textContent =
+            `${hN} quiz${hN !== 1 ? 'zes' : ''} available`;
+        document.getElementById('myka-quiz-count').textContent =
+            `${mN} quiz${mN !== 1 ? 'zes' : ''} available`;
     },
 
-    // ── PIN flow ────────────────────────────────────────
+    // ── Dark mode ──────────────────────────────────────────
+    toggleDark() {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.theme = dark ? 'dark' : 'light';
+    },
+
+    // ── Toggle helpers ─────────────────────────────────────
+    toggleFeedback(track) {
+        this._feedbackOn = !this._feedbackOn;
+        const cb = document.getElementById('feedbackToggle');
+        cb.checked = this._feedbackOn;
+        const cls = this._feedbackOn ? 'on-green' : '';
+        // update both desktop and mobile tracks
+        ['feedbackTrack','feedbackTrackMob'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.className = 'toggle-track' + (this._feedbackOn ? ' on-green' : ''); }
+        });
+    },
+
+    toggleShuffle(track) {
+        this._shuffleOn = !this._shuffleOn;
+        const cb = document.getElementById('shuffleToggle');
+        cb.checked = this._shuffleOn;
+        const accentClass = this.currentUser === 'myka' ? 'on-myka' : 'on-howard';
+        ['shuffleTrack','shuffleTrackMob'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.className = 'toggle-track' + (this._shuffleOn ? ' ' + accentClass : ''); }
+        });
+    },
+
+    // ── PIN flow ───────────────────────────────────────────
     openPin(user) {
-        this.pinTarget = user;
-        this.pinBuffer = '';
-        const isHoward = user === 'howard';
-        const modal = document.getElementById('pinModal');
+        this.pinTarget  = user;
+        this.pinBuffer  = '';
+        const isH = user === 'howard';
         const panel = document.getElementById('pinPanel');
+        panel.className = `pin-card rounded-3xl w-full max-w-xs p-7 shadow-2xl text-center pin-panel-${user}`;
+
         const avatar = document.getElementById('pinAvatar');
-        const title = document.getElementById('pinTitle');
-        const sub = document.getElementById('pinSubtitle');
+        avatar.textContent = isH ? 'H' : 'M';
+        avatar.className = `w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center font-display font-black text-white text-xl ${isH ? 'bg-blue-600' : 'bg-pink-600'}`;
 
-        panel.className = `bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-xs p-7 shadow-2xl border border-zinc-200 dark:border-zinc-800 text-center pin-panel-${user}`;
-        avatar.className = `w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-display font-black text-white mx-auto mb-4 ${isHoward ? 'bg-blue-600' : 'bg-pink-600'}`;
-        avatar.textContent = isHoward ? 'H' : 'M';
-        title.textContent = isHoward ? "Howard's PIN" : "Myka's PIN";
-        sub.textContent = `Enter your 4-digit PIN to access ${isHoward ? 'Howard' : 'Myka'}'s quizzes`;
-
-        this.renderPinDots();
-        this.renderKeypad(user);
+        document.getElementById('pinTitle').textContent = isH ? "Howard's PIN" : "Myka's PIN";
+        document.getElementById('pinSubtitle').textContent = `Enter your 4-digit PIN to continue`;
         document.getElementById('pinError').style.opacity = '0';
+
+        this._renderPinDots();
+        this._renderKeypad();
+        const modal = document.getElementById('pinModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     },
 
     closePin() {
-        const modal = document.getElementById('pinModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        document.getElementById('pinModal').classList.add('hidden');
+        document.getElementById('pinModal').classList.remove('flex');
         this.pinBuffer = '';
         this.pinTarget = null;
     },
 
-    renderPinDots() {
-        const dots = document.getElementById('pinDots');
-        dots.innerHTML = Array.from({length:4}, (_,i) =>
-            `<div class="pin-dot ${i < this.pinBuffer.length ? 'filled' : ''}"></div>`
-        ).join('');
+    _renderPinDots() {
+        document.getElementById('pinDots').innerHTML =
+            Array.from({length:4}, (_,i) =>
+                `<div class="pin-dot${i < this.pinBuffer.length ? ' filled':''}" ></div>`
+            ).join('');
     },
 
-    renderKeypad(user) {
-        const pad = document.getElementById('pinKeypad');
+    _renderKeypad() {
         const nums = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
-        pad.innerHTML = nums.map(n => {
-            if (n === '') return `<div></div>`;
+        document.getElementById('pinKeypad').innerHTML = nums.map(n => {
+            if (!n) return '<div></div>';
             const isDel = n === '⌫';
-            return `<button class="pin-btn ${isDel?'del':''}" onclick="AppState.pinPress('${n}')">${n}</button>`;
+            return `<button class="pin-btn${isDel?' del':''}" onclick="AppState.pinPress('${n}')">${n}</button>`;
         }).join('');
     },
 
@@ -651,13 +950,11 @@ const AppState = {
         } else if (this.pinBuffer.length < 4) {
             this.pinBuffer += val;
         }
-        this.renderPinDots();
-        if (this.pinBuffer.length === 4) {
-            setTimeout(() => this.verifyPin(), 150);
-        }
+        this._renderPinDots();
+        if (this.pinBuffer.length === 4) setTimeout(() => this._verifyPin(), 150);
     },
 
-    verifyPin() {
+    _verifyPin() {
         if (this.pinBuffer === this.pins[this.pinTarget]) {
             const user = this.pinTarget;
             this.currentUser = user;
@@ -665,52 +962,155 @@ const AppState = {
             this.openDashboard(user);
         } else {
             const dots = document.getElementById('pinDots');
-            dots.classList.add('pin-error');
-            const err = document.getElementById('pinError');
-            err.style.opacity = '1';
-            dots.addEventListener('animationend', () => {
-                dots.classList.remove('pin-error');
-            }, {once:true});
+            dots.classList.add('pin-shake');
+            document.getElementById('pinError').style.opacity = '1';
+            dots.addEventListener('animationend', () => dots.classList.remove('pin-shake'), {once:true});
             this.pinBuffer = '';
-            setTimeout(() => this.renderPinDots(), 400);
+            setTimeout(() => this._renderPinDots(), 430);
         }
     },
 
-    // ── Dashboard ───────────────────────────────────────
+    // ── Dashboard ──────────────────────────────────────────
     openDashboard(user) {
-        const isHoward = user === 'howard';
-        document.getElementById('landingView').classList.add('hidden-view');
-        document.getElementById('homeView').classList.remove('hidden-view');
-        document.getElementById('testView').classList.add('hidden-view');
+        const isH = user === 'howard';
+        this.currentUser = user;
 
-        const avatar = document.getElementById('dashAvatar');
-        avatar.textContent = isHoward ? 'H' : 'M';
-        avatar.className = `w-8 h-8 rounded-lg flex items-center justify-center text-sm font-display font-black text-white ${isHoward ? 'bg-blue-600' : 'bg-pink-600'}`;
-        document.getElementById('dashUserName').textContent = isHoward ? 'Howard' : 'Myka';
-        document.getElementById('dashUserSub').textContent = 'Quiz Library';
+        // Apply accent CSS vars to body for dashboard/test view
+        document.body.classList.toggle('user-myka', !isH);
+
+        // Nav identity
+        const av = document.getElementById('dashAvatar');
+        av.textContent = isH ? 'H' : 'M';
+        av.className = `w-8 h-8 rounded-xl flex items-center justify-center font-display font-black text-white text-sm shrink-0 ${isH ? 'bg-blue-600':'bg-pink-600'}`;
+
+        document.getElementById('dashUserName').textContent = isH ? 'Howard' : 'Myka';
 
         const badge = document.getElementById('dashBadge');
-        badge.className = `dash-badge ${isHoward ? 'user-tab-howard' : 'user-tab-myka'} mb-3 inline-block`;
-        badge.textContent = isHoward ? "Howard's Quizzes" : "Myka's Quizzes";
+        badge.textContent = isH ? "Howard's Quizzes" : "Myka's Quizzes";
 
-        const track = document.getElementById('shuffleTrack');
-        if (track) track.className = track.className.replace('peer-checked:bg-blue-500','').replace('peer-checked:bg-pink-500','') + ` peer-checked:bg-${isHoward?'blue':'pink'}-500`;
+        // Reset search
+        const si = document.getElementById('searchInput');
+        if (si) si.value = '';
+        document.getElementById('noResults').classList.add('hidden');
 
+        // Update shuffle track color
+        if (this._shuffleOn) {
+            ['shuffleTrack','shuffleTrackMob'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className = `toggle-track ${isH ? 'on-howard' : 'on-myka'}`;
+            });
+        }
+
+        // Show stats
+        this._renderStats(user);
+
+        setView('homeView');
         Engine.initDashboard(user);
+
+        // Stagger card entrance animations
+        setTimeout(() => {
+            document.querySelectorAll('#testGrid .quiz-card').forEach((c, i) => {
+                c.style.animationDelay = `${i * 0.06}s`;
+                c.classList.add('card-in');
+            });
+        }, 0);
     },
 
-    backToLanding() {
-        document.getElementById('landingView').classList.remove('hidden-view');
-        document.getElementById('homeView').classList.add('hidden-view');
-        document.getElementById('testView').classList.add('hidden-view');
+    _renderStats(user) {
+        const r = window.QuizRegistry || [];
+        const filtered = r.filter(q => !q.user || q.user === user);
+        const totalQ = filtered.reduce((sum, q) => sum + q.questions.length, 0);
+        document.getElementById('statsRow').innerHTML = `
+            <span class="stat-chip">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
+                ${filtered.length} quiz${filtered.length !== 1 ? 'zes' : ''}
+            </span>
+            <span class="stat-chip">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                ${totalQ} questions total
+            </span>`;
+    },
+
+    // ── Search filter (NEW FEATURE) ────────────────────────
+    filterQuizCards(query) {
+        const q = query.trim().toLowerCase();
+        const cards = document.querySelectorAll('#testGrid .quiz-card');
+        let visible = 0;
+        cards.forEach(card => {
+            const title = (card.dataset.title || '').toLowerCase();
+            const desc  = (card.dataset.desc  || '').toLowerCase();
+            const match = !q || title.includes(q) || desc.includes(q);
+            card.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        document.getElementById('noResults').classList.toggle('hidden', visible > 0 || !q);
+    },
+
+    // ── Return home from result modal ─────────────────────
+    // Goes BACK to the quiz library — does NOT go to the profile picker
+    backToDashboard() {
         document.getElementById('resultModal').classList.add('hidden');
+        document.getElementById('resultModal').classList.remove('flex');
+        document.getElementById('testView').classList.add('hidden-view');
+        document.getElementById('homeView').classList.remove('hidden-view');
+        // Re-render dashboard grid for current user
+        if (this.currentUser) {
+            Engine.initDashboard(this.currentUser);
+            // Re-apply stagger animation
+            setTimeout(() => {
+                document.querySelectorAll('#testGrid .quiz-card').forEach((c, i) => {
+                    c.style.animationDelay = `${i * 0.06}s`;
+                    c.classList.add('card-in');
+                });
+            }, 0);
+        }
+    },
+
+    // ── Switch user (goes to landing) ─────────────────────
+    switchUser() {
+        document.getElementById('resultModal').classList.add('hidden');
+        document.getElementById('resultModal').classList.remove('flex');
+        document.body.classList.remove('user-myka');
         this.currentUser = null;
+        setView('landingView');
     }
 };
 
-// ════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════
+// PATCH ENGINE'S initDashboard to add data attributes
+// so the search filter can read title/desc
+// ══════════════════════════════════════════════════════════
+const origInitDash = Engine.initDashboard.bind(Engine);
+Engine.initDashboard = function(user) {
+    origInitDash(user);
+    // Add data-title and data-desc to each card for search
+    document.querySelectorAll('#testGrid .quiz-card, #testGrid [onclick]').forEach(card => {
+        const onclick = card.getAttribute('onclick') || '';
+        const match = onclick.match(/loadTest\('(.+?)'\)/);
+        if (match) {
+            const quiz = (window.QuizRegistry || []).find(q => q.id === match[1]);
+            if (quiz) {
+                card.dataset.title = quiz.title || '';
+                card.dataset.desc  = quiz.desc  || '';
+            }
+        }
+    });
+};
+
+// Also patch exitTest to stay on homeView (not landing)
+const origExit = Engine.exitTest.bind(Engine);
+Engine.exitTest = function() {
+    origExit(); // already shows homeView
+    const si = document.getElementById('searchInput');
+    if (si) si.value = '';
+    document.getElementById('noResults').classList.add('hidden');
+};
+
+
+// ══════════════════════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => AppState.init());
 </script>
 </body>
